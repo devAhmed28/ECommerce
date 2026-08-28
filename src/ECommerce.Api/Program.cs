@@ -4,11 +4,16 @@ using ECommerce.Modules.Catalog;
 var builder = WebApplication.CreateBuilder(args);
 
 // add services
-builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 builder.Services.AddHealthChecks();
 
-builder.Services.AddCatalogModule();
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+    ?? throw new InvalidOperationException(
+        "Connection string 'DefaultConnection' was not found");
 
+builder.Services.AddCatalogModule(connectionString);
 
 var app = builder.Build();
 
@@ -19,14 +24,15 @@ app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
 
     app.UseSwaggerUI(options =>
     {
-        options.SwaggerEndpoint("/openapi/v1.json", "ECommerce API v1");
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "ECommerce API V1");
     });
 }
 
+app.MapControllers();
 
 app.MapHealthChecks("/health");
 
