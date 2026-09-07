@@ -7,12 +7,12 @@ namespace ECommerce.Modules.Catalog.Features.Products.SearchProducts;
 [Route("api/catalog/products")]
 public sealed class SearchProductsEndpoint : ControllerBase
 {
-    private readonly SearchProductsHandler _searchProductsHandler;
+    private readonly SearchProductsHandler _handler;
     private readonly IValidator<SearchProductsQuery> _validator;
 
 	public SearchProductsEndpoint(SearchProductsHandler searchProductsHandler, IValidator<SearchProductsQuery> validator)
     {
-        _searchProductsHandler = searchProductsHandler;
+        _handler = searchProductsHandler;
         _validator = validator;
     }
 
@@ -48,7 +48,7 @@ public sealed class SearchProductsEndpoint : ControllerBase
             return BadRequest(validationResult.Errors);
         }
 
-        var result = await _searchProductsHandler.HandleAsync(query);
+        var result = await _handler.HandleAsync(query);
 
         return Ok(result);
     }
