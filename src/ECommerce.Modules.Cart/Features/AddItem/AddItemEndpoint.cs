@@ -1,4 +1,5 @@
-﻿using ECommerce.Modules.Cart.Application.Interfaces;
+﻿using ECommerce.Modules.Cart.Application.DTOs;
+using ECommerce.Modules.Cart.Application.Interfaces;
 using ECommerce.Modules.Cart.Domain.Entities;
 using ECommerce.Shared.Abstractions;
 using Microsoft.AspNetCore.Authorization;
@@ -45,6 +46,23 @@ public sealed class AddItemEndpoint : ControllerBase
             await _cartRepository.AddItemAsync(item);
         }
 
-        return Ok();
+        var items = await _cartRepository.GetItemsAsync(cart.Id);
+
+        var cartDto = new CartDto
+        {
+            Id = cart.Id,
+            UserId = cart.UserId,
+            CreatedAt = cart.CreatedAt,
+            UpdatedAt = cart.UpdatedAt,
+            Items = items
+            .Select(item => new CartItemDto
+            {
+                Id = item.Id,
+                ProductId = item.ProductId,
+                Quantity = item.Quantity
+            }).ToList()
+        };
+
+        return Ok(cartDto);
     }
 }
