@@ -217,9 +217,4 @@ public sealed class CartRepository : ICartRepository
             CartItemId = cartItemId
         });
     }
-
-    public Task SaveChangesAsync()
-    {
-        return Task.CompletedTask;
-    }
 }
