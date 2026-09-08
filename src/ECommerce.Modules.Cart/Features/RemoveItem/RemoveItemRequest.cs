@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ECommerce.Modules.Cart.Features.RemoveItem
+﻿namespace ECommerce.Modules.Cart.Features.RemoveItem;
+public sealed class RemoveItemRequest
 {
-    internal class RemoveItemRequest
-    {
-    }
+    public Guid CartItemId { get; init; }
 }

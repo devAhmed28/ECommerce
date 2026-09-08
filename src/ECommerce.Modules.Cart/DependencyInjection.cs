@@ -2,6 +2,7 @@ using ECommerce.Modules.Cart.Application.Interfaces;
 using ECommerce.Modules.Cart.Features.AddItem;
 using ECommerce.Modules.Cart.Infrastructure.Database;
 using ECommerce.Modules.Cart.Infrastructure.Repositories;
+using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ECommerce.Modules.Cart;
@@ -15,7 +16,7 @@ public static class DependencyInjection
 
         services.AddScoped<ICartRepository, CartRepository>();
 
-        //services.AddValidatorsFromAssemblyContaining<AddItemRequestValidator>();
+        services.AddValidatorsFromAssemblyContaining<AddItemRequestValidator>();
 
         return services;
     }

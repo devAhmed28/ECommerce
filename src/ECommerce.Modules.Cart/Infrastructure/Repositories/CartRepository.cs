@@ -196,7 +196,27 @@ public sealed class CartRepository : ICartRepository
         });
     }
 
+    public async Task<CartItem?> GetItemByIdAsync(Guid cartId, Guid cartItemId)
+    {
+        const string sql = @"
+            SELECT
+                Id,
+                CartId,
+                ProductId,
+                Quantity
+            FROM CartItems
+            WHERE CartId = @CartId
+              AND Id = @CartItemId;
+        ";
 
+        using var connection = _connectionFactory.CreateConnection();
+
+        return await connection.QuerySingleOrDefaultAsync<CartItem>(sql, new
+        {
+            CartId = cartId,
+            CartItemId = cartItemId
+        });
+    }
 
     public Task SaveChangesAsync()
     {

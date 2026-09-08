@@ -3,23 +3,23 @@ using ECommerce.Shared.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ECommerce.Modules.Cart.Features.RemoveItem;
+namespace ECommerce.Modules.Cart.Features.UpdateQuantity;
 [ApiController]
 [Route("api/cart/items")]
 [Authorize]
-public sealed class RemoveItemEndpoint : ControllerBase
+public sealed class UpdateQuantityEndpoint : ControllerBase
 {
     private readonly ICartRepository _cartRepository;
     private readonly ICurrentUser _currentUser;
 
-    public RemoveItemEndpoint(ICartRepository cartRepository, ICurrentUser currentUser)
+    public UpdateQuantityEndpoint(ICartRepository cartRepository, ICurrentUser currentUser)
     {
         _cartRepository = cartRepository;
         _currentUser = currentUser;
     }
 
-    [HttpDelete]
-    public async Task<IActionResult> RemoveItem(RemoveItemRequest request)
+    [HttpPut]
+    public async Task<IActionResult> UpdateQuantity(UpdateQuantityRequest request)
     {
         var cart = await _cartRepository.GetByUserIdAsync(_currentUser.UserId);
 
@@ -35,7 +35,7 @@ public sealed class RemoveItemEndpoint : ControllerBase
             return NotFound();
         }
 
-        await _cartRepository.RemoveItemAsync(item.Id);
+        await _cartRepository.UpdateItemQuantityAsync(item.Id, request.Quantity);
 
         return NoContent();
     }
