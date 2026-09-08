@@ -46,6 +46,8 @@ public sealed class AddItemEndpoint : ControllerBase
             await _cartRepository.AddItemAsync(item);
         }
 
+        await _cartRepository.UpdateCartTimestampAsync(cart.Id);
+
         var items = await _cartRepository.GetItemsAsync(cart.Id);
 
         var cartDto = new CartDto

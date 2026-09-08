@@ -37,6 +37,8 @@ public sealed class RemoveItemEndpoint : ControllerBase
 
         await _cartRepository.RemoveItemAsync(item.Id);
 
+        await _cartRepository.UpdateCartTimestampAsync(cart.Id);
+
         return NoContent();
     }
 }

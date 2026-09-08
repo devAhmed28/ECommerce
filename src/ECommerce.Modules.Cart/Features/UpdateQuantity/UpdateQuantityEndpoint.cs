@@ -37,6 +37,8 @@ public sealed class UpdateQuantityEndpoint : ControllerBase
 
         await _cartRepository.UpdateItemQuantityAsync(item.Id, request.Quantity);
 
+        await _cartRepository.UpdateCartTimestampAsync(cart.Id);
+
         return NoContent();
     }
 }

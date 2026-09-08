@@ -30,6 +30,8 @@ public sealed class ClearCartEndpoint : ControllerBase
 
         await _cartRepository.ClearItemsAsync(cart.Id);
 
+        await _cartRepository.UpdateCartTimestampAsync(cart.Id);
+
         return NoContent();
     }
 }

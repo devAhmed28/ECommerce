@@ -168,7 +168,7 @@ public sealed class CartRepository : ICartRepository
 
         var items = await connection.QueryAsync<CartItem>(sql, new
         {
-            CartItemId = cartId
+            CartId = cartId
         });
 
         return items.AsList();
@@ -191,7 +191,7 @@ public sealed class CartRepository : ICartRepository
 
         return await connection.QuerySingleOrDefaultAsync<CartItem>(sql, new
         {
-            CartItemId = cartId,
+            CartId = cartId,
             ProductId = productId
         });
     }
@@ -215,6 +215,23 @@ public sealed class CartRepository : ICartRepository
         {
             CartId = cartId,
             CartItemId = cartItemId
+        });
+    }
+
+    public async Task UpdateCartTimestampAsync(Guid cartId)
+    {
+        const string sql = @"
+            UPDATE Carts
+            SET UpdatedAt = @UpdatedAt
+            WHERE Id = @CartId;
+        ";
+
+        using var connection = _connectionFactory.CreateConnection();
+
+        await connection.ExecuteAsync(sql, new
+        {
+            CartId = cartId,
+            UpdatedAt = DateTime.UtcNow
         });
     }
 }
