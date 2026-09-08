@@ -2,6 +2,7 @@
 using ECommerce.Modules.Cart.Application.Interfaces;
 using ECommerce.Modules.Cart.Domain.Entities;
 using ECommerce.Shared.Abstractions;
+using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,16 +14,25 @@ public sealed class AddItemEndpoint : ControllerBase
 {
     private readonly ICartRepository _cartRepository;
     private readonly ICurrentUser _currentUser;
+    private readonly IValidator<AddItemRequest> _validator;
 
-    public AddItemEndpoint(ICartRepository cartRepository, ICurrentUser currentUser)
+    public AddItemEndpoint(ICartRepository cartRepository, ICurrentUser currentUser, IValidator<AddItemRequest> validator)
     {
         _cartRepository = cartRepository;
         _currentUser = currentUser;
+        _validator = validator;
     }
 
     [HttpPost]
     public async Task<IActionResult> AddItem(AddItemRequest request)
     {
+        var validationResult = await _validator.ValidateAsync(request);
+
+        if (!validationResult.IsValid)
+        {
+            return BadRequest(validationResult.Errors);
+        }
+
         var cart = await _cartRepository.GetByUserIdAsync(_currentUser.UserId);
 
         if (cart is null)
@@ -47,6 +57,9 @@ public sealed class AddItemEndpoint : ControllerBase
         }
 
         await _cartRepository.UpdateCartTimestampAsync(cart.Id);
+
+        cart = await _cartRepository.GetByIdAsync(cart.Id)
+            ?? throw new InvalidOperationException("Cart could not be loaded after update.");
 
         var items = await _cartRepository.GetItemsAsync(cart.Id);
 
