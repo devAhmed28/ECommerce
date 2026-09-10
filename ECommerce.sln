@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Modules.Cart", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Shared", "src\ECommerce.Shared\ECommerce.Shared.csproj", "{5DD00297-B7A7-4663-A43F-FCC8E1DEA46D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommerce.Modules.Orders", "src\ECommerce.Modules.Orders\ECommerce.Modules.Orders.csproj", "{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,18 @@ Global
 		{5DD00297-B7A7-4663-A43F-FCC8E1DEA46D}.Release|x64.Build.0 = Release|Any CPU
 		{5DD00297-B7A7-4663-A43F-FCC8E1DEA46D}.Release|x86.ActiveCfg = Release|Any CPU
 		{5DD00297-B7A7-4663-A43F-FCC8E1DEA46D}.Release|x86.Build.0 = Release|Any CPU
+		{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E}.Debug|x64.Build.0 = Debug|Any CPU
+		{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E}.Debug|x86.Build.0 = Debug|Any CPU
+		{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E}.Release|x64.ActiveCfg = Release|Any CPU
+		{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E}.Release|x64.Build.0 = Release|Any CPU
+		{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E}.Release|x86.ActiveCfg = Release|Any CPU
+		{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,5 +109,6 @@ Global
 		{EAD63200-86AA-4970-9A3F-80E9B83F0897} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{969E4C35-0585-4BBF-95ED-04D4FD10D76E} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{5DD00297-B7A7-4663-A43F-FCC8E1DEA46D} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
+		{EA1D4B4B-E719-48C8-8D7B-8A4E3C78931E} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

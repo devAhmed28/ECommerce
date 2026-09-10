@@ -3,6 +3,7 @@ using ECommerce.Api.Middleware;
 using ECommerce.Modules.Cart;
 using ECommerce.Modules.Catalog;
 using ECommerce.Modules.Identity;
+using ECommerce.Modules.Orders;
 using ECommerce.Shared.Abstractions;
 using Microsoft.AspNetCore.RateLimiting;
 
@@ -33,6 +34,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddCatalogModule(connectionString);
 builder.Services.AddIdentityModule(builder.Configuration, connectionString);
 builder.Services.AddCartModule(connectionString);
+builder.Services.AddOrdersModule(connectionString);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<ICurrentUser, CurrentUser>();
