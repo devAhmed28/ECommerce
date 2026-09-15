@@ -4,7 +4,6 @@ using ECommerce.Modules.Orders.Application.Interfaces;
 using ECommerce.Modules.Orders.Domain.Entities;
 using ECommerce.Modules.Orders.Infrastructure.Database;
 using ECommerce.Shared.Abstractions;
-using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,30 +17,17 @@ public sealed class CreateOrderEndpoint : ControllerBase
     private readonly IOrderRepository _orderRepository;
     private readonly IDbConnectionFactory _dbConnectionFactory;
     private readonly ICurrentUser _currentUser;
-    private readonly IValidator<CreateOrderRequest> _validator;
 
-    public CreateOrderEndpoint(
-        IOrderRepository orderRepository,
-        IDbConnectionFactory dbConnectionFactory,
-        ICurrentUser currentUser,
-        IValidator<CreateOrderRequest> validator)
+    public CreateOrderEndpoint(IOrderRepository orderRepository, IDbConnectionFactory dbConnectionFactory, ICurrentUser currentUser)
     {
         _orderRepository = orderRepository;
         _dbConnectionFactory = dbConnectionFactory;
         _currentUser = currentUser;
-        _validator = validator;
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateOrder(CreateOrderRequest request)
+    public async Task<IActionResult> CreateOrder()
     {
-        var validationResult = await _validator.ValidateAsync(request);
-
-        if (!validationResult.IsValid)
-        {
-            return BadRequest(validationResult.Errors);
-        }
-
         const string sql = @"
             SELECT
                 ci.ProductId,

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace ECommerce.Modules.Identity.Features.ResetPassword;
 
 [ApiController]
-[Route("api/identity/reset-password")]
+[Route("api/auth/reset-password")]
 [EnableRateLimiting("auth")]
 public sealed class ResetPasswordEndpoint : ControllerBase
 {

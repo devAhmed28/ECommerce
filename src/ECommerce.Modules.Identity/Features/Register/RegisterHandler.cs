@@ -41,7 +41,7 @@ public sealed class RegisterHandler
 
         var encodedToken = Uri.EscapeDataString(token);
 
-        var confirmationUrl = $"{_emailOptions.BaseUrl}/api/identity/confirm-email?userId={user.Id}&token={encodedToken}";
+        var confirmationUrl = $"{_emailOptions.BaseUrl}/api/auth/confirm-email?userId={user.Id}&token={encodedToken}";
 
         await _emailSender.SendAsync(user.Email!, "Verify your email address", $@"<h1>Welcome to E-Commerce!</h1>
         <p>Please verify your email address by clicking the link below:</p>

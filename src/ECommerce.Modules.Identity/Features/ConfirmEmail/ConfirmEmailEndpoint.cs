@@ -2,7 +2,7 @@
 
 namespace ECommerce.Modules.Identity.Features.ConfirmEmail;
 [ApiController]
-[Route("api/identity/confirm-email")]
+[Route("api/auth/confirm-email")]
 public sealed class ConfirmEmailEndpoint : ControllerBase
 {
     private readonly ConfirmEmailHandler _handler;

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace ECommerce.Modules.Identity.Features.RefreshToken;
 [ApiController]
-[Route("api/identity/refresh")]
+[Route("api/auth/refresh")]
 [EnableRateLimiting("auth")]
 public sealed class RefreshTokenEndpoint : ControllerBase
 {
