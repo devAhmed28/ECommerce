@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace ECommerce.Modules.Identity.Features.Login;
 [ApiController]
-[Route("api/identity/login")]
+[Route("api/auth/login")]
 [EnableRateLimiting("auth")]
 public sealed class LoginEndpoint : ControllerBase
 {

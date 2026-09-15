@@ -3,7 +3,7 @@ using System.Reflection.Metadata;
 
 namespace ECommerce.Modules.Identity.Features.Logout;
 [ApiController]
-[Route("api/identity/logout")]
+[Route("api/auth/logout")]
 public sealed class LogoutEndpoint : ControllerBase
 {
     private readonly LogoutHandler _handler;

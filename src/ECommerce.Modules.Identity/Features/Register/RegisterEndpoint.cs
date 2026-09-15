@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace ECommerce.Modules.Identity.Features.Register;
 
 [ApiController]
-[Route("api/identity/register")]
+[Route("api/auth/register")]
 public sealed class RegisterEndpoint : ControllerBase
 {
     private readonly RegisterHandler _handler;

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.RateLimiting;
 namespace ECommerce.Modules.Identity.Features.ForgotPassword;
 
 [ApiController]
-[Route("api/identity/forgot-password")]
+[Route("api/auth/forgot-password")]
 [EnableRateLimiting("auth")]
 public sealed class ForgotPasswordEndpoint : ControllerBase
 {

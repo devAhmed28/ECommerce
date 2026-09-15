@@ -7,7 +7,7 @@ using System.Security.Claims;
 
 namespace ECommerce.Modules.Identity.Features.ChangePassword;
 [ApiController]
-[Route("api/identity/change-password")]
+[Route("api/auth/change-password")]
 [Authorize]
 public sealed class ChangePasswordEndpoint : ControllerBase
 {

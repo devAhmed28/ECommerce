@@ -1,8 +1,8 @@
-﻿using ECommerce.Modules.Orders.Application.Interfaces;
-using ECommerce.Modules.Orders.Features.CreateOrder;
+﻿using ECommerce.Modules.Orders.Application.Contracts;
+using ECommerce.Modules.Orders.Application.Interfaces;
 using ECommerce.Modules.Orders.Infrastructure.Database;
 using ECommerce.Modules.Orders.Infrastructure.Repositories;
-using FluentValidation;
+using ECommerce.Modules.Orders.Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ECommerce.Modules.Orders;
@@ -15,8 +15,7 @@ public static class DependencyInjection
             _ => new SqlConnectionFactory(connectionString));
 
         services.AddScoped<IOrderRepository, OrderRepository>();
-
-        services.AddValidatorsFromAssemblyContaining<CreateOrderRequestValidator>();
+        services.AddScoped<IOrderPaymentReader, OrderPaymentReader>();
 
         return services;
     }
