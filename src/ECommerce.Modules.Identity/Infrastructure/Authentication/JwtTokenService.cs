@@ -1,5 +1,6 @@
 ﻿using ECommerce.Modules.Identity.Domain.Entities;
 using ECommerce.Modules.Identity.Features.Login;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -11,15 +12,19 @@ namespace ECommerce.Modules.Identity.Infrastructure.Authentication;
 public sealed class JwtTokenService : IJwtTokenService
 {
     private readonly JwtOptions _jwtOptions;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public JwtTokenService(IOptions<JwtOptions> jwtOptions)
+    public JwtTokenService(IOptions<JwtOptions> jwtOptions, UserManager<ApplicationUser> userManager)
     {
         _jwtOptions = jwtOptions.Value;
+        _userManager = userManager;
     }
 
-    public AccessTokenResult CreateAccessToken(ApplicationUser user)
+    public async Task<AccessTokenResult> CreateAccessToken(ApplicationUser user)
     {
         var expiresAt = DateTime.UtcNow.AddMinutes(_jwtOptions.AccessTokenMinutes);
+
+        var roles = await _userManager.GetRolesAsync(user);
 
         var claims = new List<Claim>
         {
@@ -30,6 +35,8 @@ public sealed class JwtTokenService : IJwtTokenService
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new(ClaimTypes.Email, user.Email!)
         };
+
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SecretKey));
 
