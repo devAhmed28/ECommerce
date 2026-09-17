@@ -55,7 +55,7 @@ public sealed class RefreshTokenHandler
             return new RefreshTokenResult(null, false);
         }
 
-        var accessToken = _jwtTokenService.CreateAccessToken(user);
+        var accessToken = await _jwtTokenService.CreateAccessToken(user);
 
         var newRawRefreshToken = _jwtTokenService.CreateRefreshToken();
 

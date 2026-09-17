@@ -46,7 +46,7 @@ public sealed class LoginHandler
                 "Invalid email or password.");
         }
 
-        var accessToken = _jwtTokenService.CreateAccessToken(user);
+        var accessToken = await _jwtTokenService.CreateAccessToken(user);
 
         var refreshToken = _jwtTokenService.CreateRefreshToken();
         var refreshTokenHash = _refreshTokenHasher.Hash(refreshToken);
@@ -57,6 +57,7 @@ public sealed class LoginHandler
 
         var refreshTokenEntity = new RefreshTokenEntity(user.Id, refreshTokenHash, DateTime.UtcNow.AddDays(7), ipAddress, familyId);
         _identityDbContext.RefreshTokens.Add(refreshTokenEntity);
+        
         await _identityDbContext.SaveChangesAsync();
 
         var response = new LoginResponse(accessToken.AccessToken, accessToken.ExpiresAt, refreshToken);
