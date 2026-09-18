@@ -2,10 +2,11 @@ using Dapper;
 using ECommerce.Modules.Inventory.Application.DTOs;
 using ECommerce.Modules.Inventory.Application.Interfaces;
 using ECommerce.Modules.Inventory.Infrastructure.Database;
+using ECommerce.Shared.Abstractions.Inventory;
 
 namespace ECommerce.Modules.Inventory.Infrastructure.Services;
 
-public sealed class InventoryService(IDbConnectionFactory connectionFactory) : IInventoryService
+public sealed class InventoryService(IDbConnectionFactory connectionFactory) : IInventoryService, IInventoryStockWriter
 {
     public async Task<InventoryDto?> GetAsync(int productId, CancellationToken cancellationToken = default)
     {
@@ -24,7 +25,7 @@ public sealed class InventoryService(IDbConnectionFactory connectionFactory) : I
             ";
 
         return await connection.QuerySingleOrDefaultAsync<InventoryDto>(
-            new CommandDefinition(sql, 
+            new CommandDefinition(sql,
                 new 
                 {
                     ProductId = productId 
@@ -51,10 +52,10 @@ public sealed class InventoryService(IDbConnectionFactory connectionFactory) : I
                 await connection.QuerySingleOrDefaultAsync<int?>(
                     new CommandDefinition(existingSql, 
                         new 
-                        { 
+                        {
                             ProductId = productId 
                         },
-                        transaction,cancellationToken: cancellationToken));
+                        transaction, cancellationToken: cancellationToken));
 
             if (reservedQuantity.HasValue)
             {
@@ -99,7 +100,7 @@ public sealed class InventoryService(IDbConnectionFactory connectionFactory) : I
                     ";
 
                 await connection.ExecuteAsync(
-                    new CommandDefinition(insertSql,
+                    new CommandDefinition(insertSql, 
                         new
                         {
                             ProductId = productId,
@@ -134,11 +135,12 @@ public sealed class InventoryService(IDbConnectionFactory connectionFactory) : I
 
             var stock =
                 await connection.QuerySingleOrDefaultAsync<(int Quantity, int ReservedQuantity)>(
-                    new CommandDefinition(
-                        stockSql,
-                        new { ProductId = productId },
-                        transaction,
-                        cancellationToken: cancellationToken));
+                    new CommandDefinition(stockSql, 
+                        new 
+                        {
+                            ProductId = productId 
+                        },
+                        transaction, cancellationToken: cancellationToken));
 
             if (stock == default)
                 throw new InvalidOperationException("Inventory record was not found.");
@@ -156,8 +158,7 @@ public sealed class InventoryService(IDbConnectionFactory connectionFactory) : I
                 ";
 
             await connection.ExecuteAsync(
-                new CommandDefinition(
-                    updateSql,
+                new CommandDefinition(updateSql, 
                     new
                     {
                         ProductId = productId,
@@ -185,8 +186,7 @@ public sealed class InventoryService(IDbConnectionFactory connectionFactory) : I
                 ";
 
             await connection.ExecuteAsync(
-                new CommandDefinition(
-                    reservationSql,
+                new CommandDefinition(reservationSql, 
                     new
                     {
                         Id = Guid.NewGuid(),
@@ -226,10 +226,8 @@ public sealed class InventoryService(IDbConnectionFactory connectionFactory) : I
                 ";
 
             var reservation =
-                await connection.QuerySingleOrDefaultAsync<
-                    (Guid Id, int Quantity)>(
-                    new CommandDefinition(
-                        reservationSql,
+                await connection.QuerySingleOrDefaultAsync<(Guid Id, int Quantity)>(
+                    new CommandDefinition(reservationSql, 
                         new
                         {
                             ProductId = productId,
@@ -253,8 +251,7 @@ public sealed class InventoryService(IDbConnectionFactory connectionFactory) : I
 
             var updatedRows =
                 await connection.ExecuteAsync(
-                    new CommandDefinition(
-                        updateInventorySql,
+                    new CommandDefinition(updateInventorySql, 
                         new
                         {
                             ProductId = productId,
@@ -272,8 +269,7 @@ public sealed class InventoryService(IDbConnectionFactory connectionFactory) : I
                 ";
 
             await connection.ExecuteAsync(
-                new CommandDefinition(
-                    releaseReservationSql,
+                new CommandDefinition(releaseReservationSql, 
                     new 
                     {
                         reservation.Id 
@@ -286,6 +282,23 @@ public sealed class InventoryService(IDbConnectionFactory connectionFactory) : I
         {
             transaction.Rollback();
             throw;
+        }
+    }
+
+    public async Task ReserveAsync(Guid orderId, IReadOnlyCollection<InventoryReservationItem> items, 
+        CancellationToken cancellationToken)
+    {
+        foreach (var item in items)
+        {
+            await ReserveAsync(item.ProductId, orderId, item.Quantity, cancellationToken);
+        }
+    }
+
+    public async Task ReleaseAsync(Guid orderId, IReadOnlyCollection<InventoryReservationItem> items, CancellationToken cancellationToken)
+    {
+        foreach (var item in items)
+        {
+            await ReleaseAsync(item.ProductId, orderId, item.Quantity, cancellationToken);
         }
     }
 }
