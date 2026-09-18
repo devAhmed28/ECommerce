@@ -4,6 +4,7 @@ using ECommerce.Modules.Orders.Application.Interfaces;
 using ECommerce.Modules.Orders.Domain.Entities;
 using ECommerce.Modules.Orders.Infrastructure.Database;
 using ECommerce.Shared.Abstractions;
+using ECommerce.Shared.Abstractions.Inventory;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,16 +18,18 @@ public sealed class CreateOrderEndpoint : ControllerBase
     private readonly IOrderRepository _orderRepository;
     private readonly IDbConnectionFactory _dbConnectionFactory;
     private readonly ICurrentUser _currentUser;
+    private readonly IInventoryStockWriter _inventoryStockWriter;
 
-    public CreateOrderEndpoint(IOrderRepository orderRepository, IDbConnectionFactory dbConnectionFactory, ICurrentUser currentUser)
+    public CreateOrderEndpoint(IOrderRepository orderRepository, IDbConnectionFactory dbConnectionFactory, ICurrentUser currentUser, IInventoryStockWriter inventoryStockWriter)
     {
         _orderRepository = orderRepository;
         _dbConnectionFactory = dbConnectionFactory;
         _currentUser = currentUser;
+        _inventoryStockWriter = inventoryStockWriter;
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateOrder()
+    public async Task<IActionResult> CreateOrder(CancellationToken cancellationToken)
     {
         const string sql = @"
             SELECT
@@ -44,10 +47,11 @@ public sealed class CreateOrderEndpoint : ControllerBase
 
         using var connection = _dbConnectionFactory.CreateConnection();
 
-        var cartItems = (await connection.QueryAsync<CartProductRow>(sql, new
-        {
-            UserId = _currentUser.UserId
-        })).AsList();
+        var cartItems = (await connection.QueryAsync<CartProductRow>(sql, 
+            new
+            {
+                UserId = _currentUser.UserId
+            })).AsList();
 
         if (cartItems.Count == 0)
         {
@@ -59,17 +63,57 @@ public sealed class CreateOrderEndpoint : ControllerBase
         var order = new Order(_currentUser.UserId, totalAmount);
 
         var orderItems = cartItems
-            .Select(item => new OrderItem(
-                order.Id,
-                item.ProductId,
-                item.ProductName,
-                item.Price,
+            .Select(item => 
+                new OrderItem(
+                    order.Id,
+                    item.ProductId,
+                    item.ProductName,
+                    item.Price,
+                    item.Quantity))
+            .ToList();
+
+        var reservationItems = cartItems
+            .Select(item => new InventoryReservationItem(
+                item.ProductId, 
                 item.Quantity))
             .ToList();
 
-        var statusHistory = new OrderStatusHistory(order.Id, OrderStatus.Pending);
+        try
+        {
+            await _inventoryStockWriter.ReserveAsync(
+                order.Id,
+                reservationItems,
+                cancellationToken);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new
+            {
+                error = ex.Message
+            });
+        }
 
-        await _orderRepository.CreateAsync(order, orderItems, statusHistory, _currentUser.UserId);
+        try
+        {
+            var statusHistory = new OrderStatusHistory(order.Id, OrderStatus.Pending);
+
+            await _orderRepository.CreateAsync(order, orderItems, statusHistory, _currentUser.UserId);
+        }
+        catch
+        {
+            try
+            {
+                await _inventoryStockWriter.ReleaseAsync(
+                    order.Id,
+                    reservationItems,
+                    cancellationToken);
+            }
+            catch
+            {
+
+            }
+            throw;
+        }
 
         var orderDto = new OrderDto
         {
